@@ -5,6 +5,8 @@
 import XCTest
 import FeedStoreChallenge
 
+
+
 class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	
     //  ***********************
@@ -94,7 +96,8 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	// - MARK: Helpers
 	
 	private func makeSUT() -> FeedStore {
-		fatalError("Must be implemented")
+		let sut = CoreDataFeedStore()
+        return sut
 	}
 	
 }
