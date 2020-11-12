@@ -96,7 +96,8 @@ class FeedStoreChallengeTests: XCTestCase, FeedStoreSpecs {
 	// - MARK: Helpers
 	
 	private func makeSUT() -> FeedStore {
-		let sut = CoreDataFeedStore()
+        let storeURL = URL(fileURLWithPath: "/dev/null")
+		let sut = try! CoreDataFeedStore(storeURL: storeURL)
         return sut
 	}
 	
