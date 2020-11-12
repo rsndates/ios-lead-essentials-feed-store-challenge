@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import CoreData
 
 public class CoreDataFeedStore: FeedStore {
     
@@ -22,8 +22,6 @@ public class CoreDataFeedStore: FeedStore {
     }
     
     public func retrieve(completion: @escaping RetrievalCompletion) {
-        
+        completion(.empty)
     }
-    
-    
 }
