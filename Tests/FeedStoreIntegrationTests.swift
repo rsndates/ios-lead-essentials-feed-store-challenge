@@ -30,11 +30,11 @@ class FeedStoreIntegrationTests: XCTestCase {
         undoStoreSideEffects()
     }
     
-//    func test_retrieve_deliversEmptyOnEmptyCache() {
-//        let sut = makeSUT()
-//
-//        expect(sut, toRetrieve: .empty)
-//    }
+    func test_retrieve_deliversEmptyOnEmptyCache() {
+        let sut = makeSUT()
+
+        expect(sut, toRetrieve: .empty)
+    }
 
     func test_retrieve_deliversFeedInsertedOnAnotherInstance() {
 //        let storeToInsert = makeSUT()
@@ -75,10 +75,11 @@ class FeedStoreIntegrationTests: XCTestCase {
     
     // - MARK: Helpers
     
-//    private func makeSUT() -> FeedStore {
-//        let sut = CoreDataFeedStore()
-//        return sut
-//    }
+    private func makeSUT() -> FeedStore {
+        let storeURL = URL(fileURLWithPath: "/dev/null")
+        let sut = try! CoreDataFeedStore(storeURL: storeURL)
+        return sut
+    }
     
     private func setupEmptyStoreState() {
 
