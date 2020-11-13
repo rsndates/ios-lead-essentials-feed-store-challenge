@@ -76,7 +76,6 @@ class FeedStoreIntegrationTests: XCTestCase {
     // - MARK: Helpers
     
     private func makeSUT() -> FeedStore {
-        
         let feedStore = try! CoreDataFeedStore(storeURL: storeFilePath())
         return feedStore
     }
