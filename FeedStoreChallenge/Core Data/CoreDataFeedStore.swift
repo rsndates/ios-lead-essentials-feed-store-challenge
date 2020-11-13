@@ -9,8 +9,9 @@
 import Foundation
 import CoreData
 
-enum CoreStack: Error {
+enum CoreDataError: Error {
     case setUpError
+    case deleteError
 }
 
 public class CoreDataFeedStore: FeedStore {
@@ -28,7 +29,7 @@ public class CoreDataFeedStore: FeedStore {
 
     public init(storeURL: URL) throws {
         guard let managedObjectModel = CoreDataFeedStore.managedObjectModel else {
-            throw CoreStack.setUpError
+            throw CoreDataError.setUpError
         }
 
         persistentContainer = NSPersistentContainer(name: "CoreData", managedObjectModel: managedObjectModel)
@@ -45,10 +46,10 @@ public class CoreDataFeedStore: FeedStore {
     }
     
     public func deleteCachedFeed(completion: @escaping DeletionCompletion) {
-        context.perform { [context] in
+        context.perform { [weak self] in
+            guard let self = self else { return }
             do {
-                let managedCaches = try context.fetch(ManagedCache.fetchRequest() as NSFetchRequest<ManagedCache>)
-                let _ = try managedCaches.map(context.delete).map(context.save)
+                try self.deleteCache(completion: completion)
                 completion(nil)
             } catch {
                 completion(error)
@@ -57,11 +58,12 @@ public class CoreDataFeedStore: FeedStore {
     }
     
     public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
-        context.perform { [context] in
-            
-            
-            if let fetchedCache = try? context.fetch(ManagedCache.fetchRequest() as NSFetchRequest<ManagedCache>).first {
-                context.delete(fetchedCache)
+        context.perform { [context, weak self] in
+            guard let self = self else { return }
+            do {
+                try self.deleteCache(completion: completion)
+            } catch {
+                completion(error)
             }
             
             let cache = ManagedCache(context: context)
@@ -106,5 +108,16 @@ public class CoreDataFeedStore: FeedStore {
                  completion(.failure(error))
              }
          }
+    }
+    
+    // MARK: - Helpers
+    
+    private func deleteCache(completion: @escaping DeletionCompletion) throws {
+        do {
+            let managedCaches = try context.fetch(ManagedCache.fetchRequest() as NSFetchRequest<ManagedCache>)
+            let _ = try managedCaches.map(context.delete).map(context.save)
+        } catch {
+            completion(error)
+        }
     }
 }
