@@ -9,15 +9,26 @@
 import Foundation
 import CoreData
 
+enum CoreStack: Error {
+    case setUpError
+}
+
 public class CoreDataFeedStore: FeedStore {
     
     private let persistentContainer: NSPersistentContainer
     private let context: NSManagedObjectContext
-
-    public init(storeURL: URL) throws {
+    
+    static var managedObjectModel: NSManagedObjectModel? {
         guard let modelURL = Bundle(for: CoreDataFeedStore.self).url(forResource: "CoreData", withExtension: "momd"),
               let managedObjectModel = NSManagedObjectModel(contentsOf: modelURL) else {
-            fatalError("Couldn't setup core data stack")
+            return nil
+        }
+        return managedObjectModel
+    }
+
+    public init(storeURL: URL) throws {
+        guard let managedObjectModel = CoreDataFeedStore.managedObjectModel else {
+            throw CoreStack.setUpError
         }
 
         persistentContainer = NSPersistentContainer(name: "CoreData", managedObjectModel: managedObjectModel)
