@@ -37,7 +37,7 @@ public class CoreDataFeedStore: FeedStore {
         context.perform { [context] in
             do {
                 let managedCaches = try context.fetch(ManagedCache.fetchRequest() as NSFetchRequest<ManagedCache>)
-                managedCaches.forEach { context.delete($0) }
+                try managedCaches.map(context.delete).map(context.save)
                 completion(nil)
             } catch {
                 completion(error)

@@ -37,14 +37,14 @@ class FeedStoreIntegrationTests: XCTestCase {
     }
 
     func test_retrieve_deliversFeedInsertedOnAnotherInstance() {
-//        let storeToInsert = makeSUT()
-//        let storeToLoad = makeSUT()
-//        let feed = uniqueImageFeed()
-//        let timestamp = Date()
-//
-//        insert((feed, timestamp), to: storeToInsert)
-//
-//        expect(storeToLoad, toRetrieve: .found(feed: feed, timestamp: timestamp))
+        let storeToInsert = makeSUT()
+        let storeToLoad = makeSUT()
+        let feed = uniqueImageFeed()
+        let timestamp = Date()
+
+        insert((feed, timestamp), to: storeToInsert)
+
+        expect(storeToLoad, toRetrieve: .found(feed: feed, timestamp: timestamp))
     }
     
     func test_insert_overridesFeedInsertedOnAnotherInstance() {
@@ -76,17 +76,29 @@ class FeedStoreIntegrationTests: XCTestCase {
     // - MARK: Helpers
     
     private func makeSUT() -> FeedStore {
-        let storeURL = URL(fileURLWithPath: "/dev/null")
-        let sut = try! CoreDataFeedStore(storeURL: storeURL)
-        return sut
+        let userHomeDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let filePath = userHomeDirectory.appendingPathComponent("feed.store")
+        let feedStore = try! CoreDataFeedStore(storeURL: filePath)
+        return feedStore
     }
     
     private func setupEmptyStoreState() {
-
+        deleteStoreFileFromTests()
     }
 
     private func undoStoreSideEffects() {
-
+        deleteStoreFileFromTests()
     }
     
+    private func deleteStoreFileFromTests() {
+        let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let filePath = cachesDirectory.appendingPathComponent("feed.store")
+        if FileManager.default.fileExists(atPath: filePath.path) {
+         do {
+             try FileManager.default.removeItem(at: filePath)
+         } catch {
+             XCTFail("Couldn't remove feed store file at specified path")
+         }
+        }
+    }
 }
