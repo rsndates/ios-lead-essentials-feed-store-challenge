@@ -19,20 +19,15 @@ public class CoreDataFeedStore: FeedStore {
     private let persistentContainer: NSPersistentContainer
     private let context: NSManagedObjectContext
     
-    static var managedObjectModel: NSManagedObjectModel? {
-        guard let modelURL = Bundle(for: CoreDataFeedStore.self).url(forResource: "CoreData", withExtension: "momd"),
-              let managedObjectModel = NSManagedObjectModel(contentsOf: modelURL) else {
-            return nil
-        }
-        return managedObjectModel
-    }
+    static let managedObjectModel: NSManagedObjectModel? = NSManagedObjectModel(
+        contentsOf: Bundle(for: CoreDataFeedStore.self).url(forResource: "CoreData", withExtension: "momd")!)
 
     public init(storeURL: URL) throws {
         guard let managedObjectModel = CoreDataFeedStore.managedObjectModel else {
             throw CoreDataError.setUpError
         }
-
-        persistentContainer = NSPersistentContainer(name: "CoreData", managedObjectModel: managedObjectModel)
+        persistentContainer = NSPersistentContainer(
+            name: "CoreData", managedObjectModel: managedObjectModel)
         let storeDescription = NSPersistentStoreDescription(url: storeURL)
         persistentContainer.persistentStoreDescriptions = [storeDescription]
 
@@ -62,25 +57,20 @@ public class CoreDataFeedStore: FeedStore {
             guard let self = self else { return }
             do {
                 try self.deleteCache(completion: completion)
-            } catch {
-                completion(error)
-            }
-            
-            let cache = ManagedCache(context: context)
-            cache.timestamp = timestamp
-            let managedFeedArray = feed.map { (image) -> ManagedFeedImage in
-                let managedFeedImage = ManagedFeedImage(context: context)
-                managedFeedImage.id = image.id
-                managedFeedImage.objectDescription = image.description
-                managedFeedImage.location = image.location
-                managedFeedImage.url = image.url
-                return managedFeedImage
-            }
-            cache.feed = NSOrderedSet(array: managedFeedArray)
-
-            do {
+                let cache = ManagedCache(context: context)
+                cache.timestamp = timestamp
+                let managedFeedArray = feed.map { (image) -> ManagedFeedImage in
+                    let managedFeedImage = ManagedFeedImage(context: context)
+                    managedFeedImage.id = image.id
+                    managedFeedImage.objectDescription = image.description
+                    managedFeedImage.location = image.location
+                    managedFeedImage.url = image.url
+                    return managedFeedImage
+                }
+                cache.feed = NSOrderedSet(array: managedFeedArray)
                 try context.save()
                 completion(nil)
+
             } catch {
                 completion(error)
             }
@@ -114,7 +104,7 @@ public class CoreDataFeedStore: FeedStore {
     
     private func deleteCache(completion: @escaping DeletionCompletion) throws {
         let managedCaches = try context.fetch(ManagedCache.fetchRequest() as NSFetchRequest<ManagedCache>)
-        let _ = try managedCaches.map(context.delete).map(context.save)
+        try managedCaches.first.map(context.delete).map(context.save)
     }
 }
 

@@ -89,8 +89,8 @@ class FeedStoreIntegrationTests: XCTestCase {
     }
     
     private func storeFilePath() -> URL {
-        let cahcesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
-        return cahcesDirectory.appendingPathComponent("feed.store")
+        let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        return cachesDirectory.appendingPathComponent("feed.store")
     }
     
     private func deleteStoreFileFromTests() {
