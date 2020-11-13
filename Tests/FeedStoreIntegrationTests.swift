@@ -76,9 +76,8 @@ class FeedStoreIntegrationTests: XCTestCase {
     // - MARK: Helpers
     
     private func makeSUT() -> FeedStore {
-        let userHomeDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
-        let filePath = userHomeDirectory.appendingPathComponent("feed.store")
-        let feedStore = try! CoreDataFeedStore(storeURL: filePath)
+        
+        let feedStore = try! CoreDataFeedStore(storeURL: storeFilePath())
         return feedStore
     }
     
@@ -90,9 +89,13 @@ class FeedStoreIntegrationTests: XCTestCase {
         deleteStoreFileFromTests()
     }
     
+    private func storeFilePath() -> URL {
+        let userHomeDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        return userHomeDirectory.appendingPathComponent("feed.store")
+    }
+    
     private func deleteStoreFileFromTests() {
-        let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
-        let filePath = cachesDirectory.appendingPathComponent("feed.store")
+        let filePath = storeFilePath()
         if FileManager.default.fileExists(atPath: filePath.path) {
          do {
              try FileManager.default.removeItem(at: filePath)
