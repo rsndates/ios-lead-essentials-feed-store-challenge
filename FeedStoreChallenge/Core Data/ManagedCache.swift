@@ -15,7 +15,7 @@ public class ManagedCache: NSManagedObject, Identifiable {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<ManagedCache> {
         return NSFetchRequest<ManagedCache>(entityName: "Cache")
     }
-    @NSManaged public var timestamp: Date?
-    @NSManaged public var feed: NSOrderedSet?
+    @NSManaged public var timestamp: Date
+    @NSManaged public var feed: NSOrderedSet
 
 }
