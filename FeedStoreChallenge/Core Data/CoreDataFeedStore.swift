@@ -92,8 +92,8 @@ public class CoreDataFeedStore: FeedStore {
              do {
                 let fetchedCaches = try context.fetch(ManagedCache.fetchRequest() as NSFetchRequest<ManagedCache>)
 
-                 if let managedCache = fetchedCaches.first {
-                     let localFeed = managedCache.feed!.compactMap { (managedImage) -> LocalFeedImage? in
+                if let managedCache = fetchedCaches.first, let feed = managedCache.feed {
+                     let localFeed = feed.compactMap { (managedImage) -> LocalFeedImage? in
                          if let image = managedImage as? ManagedFeedImage {
                              return LocalFeedImage(id: image.id!, description: image.objectDescription, location: image.location, url: image.url!)
                          } else {
