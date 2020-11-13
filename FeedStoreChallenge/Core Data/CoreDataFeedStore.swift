@@ -113,11 +113,7 @@ public class CoreDataFeedStore: FeedStore {
     // MARK: - Helpers
     
     private func deleteCache(completion: @escaping DeletionCompletion) throws {
-        do {
-            let managedCaches = try context.fetch(ManagedCache.fetchRequest() as NSFetchRequest<ManagedCache>)
-            let _ = try managedCaches.map(context.delete).map(context.save)
-        } catch {
-            completion(error)
-        }
+        let managedCaches = try context.fetch(ManagedCache.fetchRequest() as NSFetchRequest<ManagedCache>)
+        let _ = try managedCaches.map(context.delete).map(context.save)
     }
 }
